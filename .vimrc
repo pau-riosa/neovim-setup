@@ -1,6 +1,8 @@
-packadd minpac 
+packadd minpac
 call minpac#init()
 " Plugins
+call minpac#add('vim-ruby/vim-ruby')
+call minpac#add('junegunn/fzf')
 call minpac#add('junegunn/fzf.vim')
 call minpac#add('tpope/vim-unimpaired')
 call minpac#add('scrooloose/nerdtree')
@@ -29,6 +31,7 @@ call minpac#add('c-brenn/phoenix.vim')
 call minpac#add('tpope/vim-projectionist')
 call minpac#add('mattn/emmet-vim')
 call minpac#add('dense-analysis/ale')
+call minpac#add('ruby-formatter/rufo-vim')
 
 
 " Commands
@@ -56,7 +59,7 @@ set hlsearch    " Highlight matches
 xnoremap p pgvy " Paste multiple times
 
 " Clear cache
-:nnoremap <CR> :nohlsearch<cr> 
+:nnoremap <CR> :nohlsearch<cr>
 
 " Make it easy to navigate on insert mode
 imap <C-k> <Up>
@@ -73,16 +76,14 @@ set foldlevel=0
 " Undo files
 set undofile
 if !has('nvim')
-  set undodir=~/.vim/undo 
+  set undodir=~/.vim/undo
 endif
 
 augroup vimrc
   autocmd!
-  autocmd BufWritePre /tmp/* setlocal noundofile 
+  autocmd BufWritePre /tmp/* setlocal noundofile
 augroup END
 
-"Mix Formatter
-let g:mix_format_on_save = 1
 
 "Use deoplete
 " let g:deoplete#enable_at_startup=1
@@ -117,7 +118,7 @@ xmap gs <plug>(GrepperOperator)
 
 " Neovim Terminal
 if has('nvim')
-  tnoremap <Esc> <C-\><C-n> 
+  tnoremap <Esc> <C-\><C-n>
   tnoremap <C-v><Esc> <Esc>
 endif
 
@@ -125,53 +126,52 @@ if has('nvim') && executable('nvr')
   let $VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
 endif
 
-
 " Key commands
 imap jj <Esc>
 map ss :w<cr>
 map qq :q <cr>
 nmap <tab> <c-w>w
 
+"Mix Formatter
+let g:ale_enabled = 0
+let g:mix_format_on_save = 1
+" Enable rufo (RUby FOrmat)
+let g:rufo_auto_formatting = 1
 " Linting
 let g:ale_linters = {
 \ 'javascript': ['eslint', 'tslint'],
 \ 'typescript': ['eslint', 'tslint'],
-\ 'elixir': ['credo']
+\ 'elixir': ['credo', 'mix_format']
 \}
 
+" Fixers
+let g:ale_fixers = {
+\   '*': ['mix_format', 'remove_trailing_lines', 'trim_whitespace']
+\}
+" Set this variable to 1 to fix files when you save them.
+let g:ale_fix_on_save = 0
 let g:ale_elixir_credo_strict=1
-let g:ale_linters_explicit=1
 let g:ale_set_highlights=1
 let g:ale_sign_error = '🚫'
 let g:ale_sign_warning = '⚠️'
-let g:ale_completion_enabled=1
 let g:ale_sign_column_always=1
 let g:airline#extensions#ale#enabled = 1
 
 let g:ale_lint_on_text_changed='always' " default
 let g:ale_lint_on_save=1
 let g:ale_lint_on_enter=0
-let g:ale_lint_on_filetype_changed=1 
+let g:ale_lint_on_filetype_changed=1
 
 highlight ALEErrorSign ctermbg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
 
 
 " Mappings in the style of unimpaired-next
-nmap <silent> [W <Plug>(ale_first) 
-nmap <silent> [w <Plug>(ale_previous) 
-nmap <silent> ]w <Plug>(ale_next) 
+nmap <silent> [W <Plug>(ale_first)
+nmap <silent> [w <Plug>(ale_previous)
+nmap <silent> ]w <Plug>(ale_next)
 nmap <silent> ]W <Plug>(ale_last)
 nnoremap <Leader>l :ALELint<CR>
-
-"""""""""""""""
-" search replace all files in current (project folder)
-" :call SearchAndReplace(search_value, replace_value, directory)
-"""""""""""""""
-function SearchAndReplace(search_value, replace_value, directory)
-  exec ":vimgrep /" . a:search_value . "/gj " . a:directory
-  exec ":cfdo %s/" . a:search_value . "/" . a:replace_value . "/g | update"
-endfunction
 
 
 " New tests from vim-test
@@ -186,20 +186,33 @@ nmap <silent> <leader>tt :TestFile<cr>
 " Run all test files
 nmap <silent> <leader>ta :TestSuite<cr>
 
+"""""""""""""""
+" search replace all files in current (project folder)
+"
+" :call SearchAndReplace(search, value, directory)
+"""""""""""""""
+function SearchAndReplace(search_value, replace_value, directory)
+  exec ":vimgrep /" . a:search_value . "/gj " . a:directory
+  exec ":cfdo %s/" . a:search_value . "/" . a:replace_value . "/g | update"
+endfunction
+
+
+
 """""""""""""""""""""
 " vim-test extensions
 """""""""""""""""""""
-function! ElixirUmbrellaTransform(cmd) abort
-  if match(a:cmd, 'apps/') != -1
-    return substitute(a:cmd, 'mix test apps/\([^/]*/\)', 'cd apps/\1 \&\& mix test ', '')
-  else
-    return a:cmd
-  end
-endfunction
+" function! ElixirUmbrellaTransform(cmd) abort
+"   if match(a:cmd, 'apps/') != -1
+"     return substitute(a:cmd, 'mix test apps/\([^/]*/\)', 'cd apps/\1 \&\& mix test ', '')
+"   else
+"     return a:cmd
+"   end
+" endfunction
 
+" let g:test#custom_transformations = {'elixir_umbrella': function('ElixirUmbrellaTransform')}
+" let g:test#transformation = 'elixir_umbrella'
 let g:test#preserve_screen = 0
-let g:test#custom_transformations = {'elixir_umbrella': function('ElixirUmbrellaTransform')}
-let g:test#transformation = 'elixir_umbrella'
+let g:test#filename_modifier = ":."
 
 
 " Run Credo in Project
@@ -300,20 +313,6 @@ map <leader>tp :split \| terminal mix phx.server <cr>
 map <leader>tg :split \| terminal mix deps.get <cr>
 map <leader>tm :split \| terminal mix ecto.migrate <cr>
 
-" Navigate tabs
-
-map <leader>gn :tabnext<cr>
-map <leader>gp :tabprevious<cr>
-
-" Pragtech Umbrella Elixir
-" Data
-map <leader>uds :FZF apps/data/lib/schemas <cr>
-map <leader>udc :FZF apps/data/lib/contexts <cr>
-map <leader>udt :FZF apps/data/test <cr>
-map <leader>udp :FZF apps/data/priv <cr>
-map <leader>udg :FZF apps/data/config <cr>
-map <leader>udf :FZF apps/data <cr>
-
 " API
 map <leader>uas :FZF apps/api/lib/api_web/schemas <cr>
 map <leader>uar :FZF apps/api/lib/api_web/resolvers <cr>
@@ -322,19 +321,3 @@ map <leader>uan :FZF apps/api/lib/api_web/channels <cr>
 map <leader>uat :FZF apps/api/test <cr>
 map <leader>uag :FZF apps/api/config <cr>
 map <leader>uaf :FZF apps/api <cr>
-
-" " Seeyoudoc
-" map <leader>udc :FZF apps/seeyoudoc/lib/seeyoudoc<cr>
-" map <leader>udt :FZF apps/seeyoudoc/test<cr>
-" map <leader>udp :FZF apps/seeyoudoc/priv<cr>
-" map <leader>udg :FZF apps/seeyoudoc/config<cr>
-
-" " Seeyoudoc Web
-" map <leader>uas :FZF apps/seeyoudoc_web/lib/api_web/schemas <cr>
-" map <leader>uar :FZF apps/api/lib/api_web/resolvers <cr>
-" map <leader>uac :FZF apps/api/lib/api_web/contollers <cr>
-" map <leader>uan :FZF apps/api/lib/api_web/channels <cr>
-" map <leader>uat :FZF apps/api/test <cr>
-" map <leader>uag :FZF apps/api/config <cr>
-" map <leader>uaf :FZF apps/api <cr>
-
