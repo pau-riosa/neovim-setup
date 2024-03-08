@@ -23,8 +23,6 @@ brew install rg
 ```
 brew install neovim
 ```
-
-
 3. Clone repo 
 ```
 mkdir ~/.config

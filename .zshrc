@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -8,7 +15,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="spaceship"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -125,24 +132,10 @@ alias gp="git push -u origin "
 alias gl="git pull origin "
 alias gc="git commit "
 alias gh="git lg"
-alias gf="git fetch"
-alias glu="git pull upstream"
-alias gd="git pull --rebase --autostash origin develop"
-alias gm="git pull --rebase --autostash origin master"
 
 alias mc="mix credo --strict"
 alias ms="iex -S mix phx.server"
-alias rr="mix ecto.reset && mix ecto.realistic"
-alias rd="mix ecto.reset && mix ecto.demo"
-
-alias python="python3"
-
-# run npm install -g webdriver-manager
-# webdriver-manager clean
-# webdriver-manager update
-# webdriver-manager start
-alias wd="webdriver-manager start --versions.chrome=78.0.3904.70"
-alias dr="docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.9.3"
+alias md="mix dialyzer"
 
 alias l="ls -a"
 alias f="xdg-open"
@@ -151,36 +144,10 @@ alias f="xdg-open"
 
 . $HOME/.asdf/completions/asdf.bash
 
-
-source ~/zsh-git-prompt/zshrc.sh GIT_PROMPT_ONLY_IN_REPO=1
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# PROMPT=$'%{${fg[yellow]}%}%~%b $(git_super_status) %[\033[0;32m\]🔥\ \n%T %[\033[0;32m\]🤙\ '
-SPACESHIP_DIR_TRUNC_REPO="false"
-
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-
-# test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex" # this loads kiex
-
 export VIMCONFIG=~/.config/nvim
 export VIMDATA=~/.local/share/nvim
 
-export RUBY=$HOME/.gem/ruby/2.6.0/bin:
-export PYTHON_PATH="$HOME/Library/Python/3.7/bin"
-export RUST_PATH="$HOME/.cargo/env"
-export PATH=$RUST_PATH:$RUBY:$PYTHON_PATH:$PATH:$VIMCONFIG/pack/bundle/start/fzf/bin:
-
 export FZF_DEFAULT_COMMAND='rg --files'
-export "REPLACE_OS_VARS"="true"
-export "BASE_URL"="http://host.docker.internal:4001"
-# export "BASE_URL"="http://localhost:4001"
-export "REMOTE_URL"="http://localhost:4444/wd/hub/"
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/emulator
-export PATH=$PATH:$ANDROID_HOME/tools
-export PATH=$PATH:$ANDROID_HOME/tools/bin
-export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 # Neovim terminal
 if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
@@ -190,8 +157,16 @@ if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
     alias nvim='echo "No nesting!"'
   fi
 fi
-export PATH="/usr/local/opt/postgresql@11/bin:$PATH"
+
 export LANG=en_US.US-ASCII
-export POOL_SIZE=10
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+export LDFLAGS="-L/opt/homebrew/opt/curl/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/curl/include"
+export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+export KERL_CONFIGURE_OPTIONS="--disable-debug --without-javac"
+
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+export NVM_DIR="/Users/meline-woolbird/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm

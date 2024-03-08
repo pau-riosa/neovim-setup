@@ -49,6 +49,10 @@ set tabstop=2
 set ts=2
 set shiftwidth=2
 set expandtab
+colorscheme default
+syntax on
+highlight Normal ctermbg=None
+highlight LineNr ctermfg=DarkGrey
 set number	" Display the line numbers
 set showcmd
 set showmode
@@ -139,8 +143,8 @@ let g:mix_format_on_save = 1
 let g:rufo_auto_formatting = 1
 " Linting
 let g:ale_linters = {
-\ 'javascript': ['eslint', 'tslint'],
-\ 'typescript': ['eslint', 'tslint'],
+\ 'javascript': ['eslint', 'prettier', 'tslint'],
+\ 'typescript': ['eslint', 'prettier', 'tslint'],
 \ 'elixir': ['credo', 'mix_format']
 \}
 
@@ -191,10 +195,10 @@ nmap <silent> <leader>ta :TestSuite<cr>
 "
 " :call SearchAndReplace(search, value, directory)
 """""""""""""""
-function SearchAndReplace(search_value, replace_value, directory)
-  exec ":vimgrep /" . a:search_value . "/gj " . a:directory
-  exec ":cfdo %s/" . a:search_value . "/" . a:replace_value . "/g | update"
-endfunction
+" function SearchAndReplace(search_value, replace_value, directory)
+"   exec ":vimgrep /" . a:search_value . "/gj " . a:directory
+"   exec ":cfdo %s/" . a:search_value . "/" . a:replace_value . "/g | update"
+" endfunction
 
 
 
@@ -214,6 +218,31 @@ endfunction
 let g:test#preserve_screen = 0
 let g:test#filename_modifier = ":."
 
+" Run Mix Compile in File
+function! RunPhoenixCompileFile(...)
+  if a:0
+    let command_suffix = a:1
+  else
+    let command_suffix = ""
+  endif
+
+  call SetTestFile()
+  call RunPhoenixCompile(t:grb_test_file . command_suffix)
+endfunction
+
+" Run Credo in Project
+function! RunPhoenixCompile(filename)
+  " Write the file and run tests for the given filename
+  :w
+  :silent !echo;echo;echo;echo;echo
+  exec ":!time mix compile --force " . a:filename
+endfunction
+
+
+" Run this file
+map <leader>cc :call RunPhoenixCompileFile()<cr>
+" Run all test files
+map <leader>ca :call RunPhoenixCompile('')<cr>
 
 " Run Credo in Project
 function! RunPhoenixCredo(filename)
@@ -312,12 +341,3 @@ map <leader>tv :vsplit \| terminal <cr>
 map <leader>tp :split \| terminal mix phx.server <cr>
 map <leader>tg :split \| terminal mix deps.get <cr>
 map <leader>tm :split \| terminal mix ecto.migrate <cr>
-
-" API
-map <leader>uas :FZF apps/api/lib/api_web/schemas <cr>
-map <leader>uar :FZF apps/api/lib/api_web/resolvers <cr>
-map <leader>uac :FZF apps/api/lib/api_web/contollers <cr>
-map <leader>uan :FZF apps/api/lib/api_web/channels <cr>
-map <leader>uat :FZF apps/api/test <cr>
-map <leader>uag :FZF apps/api/config <cr>
-map <leader>uaf :FZF apps/api <cr>
