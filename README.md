@@ -70,18 +70,9 @@ Saving session is useful if you want to go back to the previous state of your wo
 
 
 # Other Setup
-1. add this to `~/.zshrc` for Martide Development Setup 
-``
-
-alias ms="iex -S mix phx.server"
-
-alias rr="mix ecto.reset && mix ecto.realistic"
-
-alias rd="mix ecto.reset && mix ecto.demo"
-
-alias wd="webdriver-manager start --versions.chrome=78.0.3904.97"
-
-alias dr="docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.4.1"
+ mkdir -p ~/.vim/colors
+ cd ~/.vim/colors
+ curl -O https://raw.githubusercontent.com/nanotech/jellybeans.vim/master/colors/jellybeans.vim
 
 ``
 

@@ -42,17 +42,19 @@ command! PackStatus  call minpac#status()
 " General
 set clipboard=unnamed
 syntax on
-filetype on
+filetype plugin indent on
 set nopaste
 color desert
 set tabstop=2
 set ts=2
 set shiftwidth=2
 set expandtab
-colorscheme default
-syntax on
-highlight Normal ctermbg=None
-highlight LineNr ctermfg=DarkGrey
+" mkdir -p ~/.vim/colors
+" cd ~/.vim/colors
+" curl -O https://raw.githubusercontent.com/nanotech/jellybeans.vim/master/colors/jellybeans.vim
+colorscheme jellybeans 
+highlight Normal guibg=none
+highlight NonText guibg=none
 set number	" Display the line numbers
 set showcmd
 set showmode
