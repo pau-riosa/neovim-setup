@@ -8,7 +8,6 @@ call minpac#add('tpope/vim-unimpaired')
 call minpac#add('scrooloose/nerdtree')
 call minpac#add('tpope/vim-scriptease', {'type': 'opt'})
 call minpac#add('elixir-editors/vim-elixir')
-call minpac#add('mhinz/vim-mix-format')
 call minpac#add('tpope/vim-fugitive')
 call minpac#add('tpope/vim-commentary')
 call minpac#add('tpope/vim-markdown')
@@ -31,7 +30,6 @@ call minpac#add('c-brenn/phoenix.vim')
 call minpac#add('tpope/vim-projectionist')
 call minpac#add('mattn/emmet-vim')
 call minpac#add('dense-analysis/ale')
-call minpac#add('ruby-formatter/rufo-vim')
 
 
 " Commands
@@ -49,6 +47,7 @@ set tabstop=2
 set ts=2
 set shiftwidth=2
 set expandtab
+setlocal formatprg=mix\ format\ -
 " mkdir -p ~/.vim/colors
 " cd ~/.vim/colors
 " curl -O https://raw.githubusercontent.com/nanotech/jellybeans.vim/master/colors/jellybeans.vim
@@ -138,11 +137,46 @@ map ss :w<cr>
 map qq :q <cr>
 nmap <tab> <c-w>w
 
-"Mix Formatter
-let g:ale_enabled = 0
-let g:mix_format_on_save = 1
-" Enable rufo (RUby FOrmat)
-let g:rufo_auto_formatting = 1
+
+" Create robust Elixir formatting function
+function! SafeElixirFormat()
+  " Check if we're in an Elixir or Phoenix LiveView template file
+  let l:is_elixir = &filetype == 'elixir'
+  let l:is_heex = expand('%:e') == 'heex'
+  
+  if !l:is_elixir && !l:is_heex
+    return
+  endif
+  
+  " Check if mix.exs exists in project
+  let l:mix_file = findfile('mix.exs', '.;')
+  if empty(l:mix_file)
+    echo "No mix.exs found, skipping format"
+    return
+  endif
+  
+  " Save cursor position
+  let l:curpos = getcurpos()
+  
+  " Run mix format on the current file
+  let l:cmd = "mix format " . expand('%:p') . " 2>/dev/null"
+  silent let l:output = system(l:cmd)
+  
+  " Reload the file and restore cursor
+  edit!
+  call setpos('.', l:curpos)
+endfunction
+
+" Set up autocommand to use our safe formatter for both Elixir and HEEX files
+autocmd BufWritePost *.ex,*.exs,*.heex call SafeElixirFormat()
+
+" Optional: If you want to set proper filetype for .heex files
+" This helps with syntax highlighting and other filetype-specific features
+augroup heex_ft
+  au!
+  autocmd BufNewFile,BufRead *.heex setfiletype eelixir
+augroup END
+
 " Linting
 let g:ale_linters = {
 \ 'javascript': ['eslint', 'prettier', 'tslint'],
@@ -150,6 +184,8 @@ let g:ale_linters = {
 \ 'elixir': ['credo', 'mix_format']
 \}
 
+
+let g:ale_enabled = 0
 " Fixers
 let g:ale_fixers = {
 \   '*': ['mix_format', 'remove_trailing_lines', 'trim_whitespace']
