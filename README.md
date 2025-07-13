@@ -26,7 +26,7 @@ brew install neovim
 3. Clone repo 
 ```
 mkdir ~/.config
-git clone git@gitlab.com:jethro.riosa/neovim-setup.git ~/.config/nvim
+git clone git@github.com:pau-riosa/neovim-setup.git ~/.config/nvim
 ```
 
 # for bash_script
@@ -65,8 +65,7 @@ Saving session is useful if you want to go back to the previous state of your wo
 1. open your terminal
 2. run `vim`
 3. if you see errors like `minpac#init`
-
-4. run `git clone git clone https://github.com/k-takata/minpac.git ~/.config/nvim/pack/minpac/opt/minpac`
+4. run `git clone https://github.com/k-takata/minpac.git ~/.config/nvim/pack/minpac/opt/minpac`
 
 
 # Other Setup
@@ -74,5 +73,15 @@ Saving session is useful if you want to go back to the previous state of your wo
  cd ~/.vim/colors
  curl -O https://raw.githubusercontent.com/nanotech/jellybeans.vim/master/colors/jellybeans.vim
 
-``
 
+# Setup CopilotChat.nvim
+https://github.com/CopilotC-Nvim/CopilotChat.nvim/tree/main
+```
+mkdir -p ~/.config/nvim/pack/copilotchat/start
+cd ~/.config/nvim/pack/copilotchat/start
+
+git clone https://github.com/github/copilot.vim
+git clone https://github.com/nvim-lua/plenary.nvim
+
+git clone https://github.com/CopilotC-Nvim/CopilotChat.nvim
+```

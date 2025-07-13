@@ -30,6 +30,10 @@ call minpac#add('c-brenn/phoenix.vim')
 call minpac#add('tpope/vim-projectionist')
 call minpac#add('mattn/emmet-vim')
 call minpac#add('dense-analysis/ale')
+" Copilot
+call minpac#add('github/copilot.vim')
+call minpac#add('nvim-lua/plenary.nvim')
+call minpac#add('CopilotC-Nvim/CopilotChat.nvim')
 
 
 " Commands
